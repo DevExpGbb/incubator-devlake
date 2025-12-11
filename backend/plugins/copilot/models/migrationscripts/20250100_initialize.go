@@ -18,12 +18,29 @@ limitations under the License.
 package migrationscripts
 
 import (
-	"github.com/apache/incubator-devlake/core/plugin"
+	"github.com/apache/incubator-devlake/core/context"
+	"github.com/apache/incubator-devlake/core/errors"
+	"github.com/apache/incubator-devlake/helpers/migrationhelper"
+	"github.com/apache/incubator-devlake/plugins/copilot/models/migrationscripts/archived"
 )
 
-// All returns all migration scripts for the copilot plugin
-func All() []plugin.MigrationScript {
-	return []plugin.MigrationScript{
-		new(initTables),
-	}
+type initTables struct{}
+
+func (*initTables) Up(basicRes context.BasicRes) errors.Error {
+	return migrationhelper.AutoMigrateTables(
+		basicRes,
+		&archived.CopilotConnection{},
+		&archived.CopilotScope{},
+		&archived.CopilotOrgMetrics{},
+		&archived.CopilotLanguageMetrics{},
+		&archived.CopilotSeat{},
+	)
+}
+
+func (*initTables) Version() uint64 {
+	return 20250100000000
+}
+
+func (*initTables) Name() string {
+	return "Initialize schema for Copilot plugin"
 }

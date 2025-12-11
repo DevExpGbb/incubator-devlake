@@ -15,15 +15,14 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package migrationscripts
+package tasks
 
-import (
-	"github.com/apache/incubator-devlake/core/plugin"
-)
+import "github.com/apache/incubator-devlake/core/plugin"
 
-// All returns all migration scripts for the copilot plugin
-func All() []plugin.MigrationScript {
-	return []plugin.MigrationScript{
-		new(initTables),
-	}
+// SubTaskMetaList holds all registered subtasks for the Copilot plugin
+var SubTaskMetaList []*plugin.SubTaskMeta
+
+// RegisterSubtaskMeta registers a subtask meta to the plugin
+func RegisterSubtaskMeta(meta *plugin.SubTaskMeta) {
+	SubTaskMetaList = append(SubTaskMetaList, meta)
 }

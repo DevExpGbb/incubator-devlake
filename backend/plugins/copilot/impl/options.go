@@ -15,15 +15,10 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package migrationscripts
+package impl
 
-import (
-	"github.com/apache/incubator-devlake/core/plugin"
-)
-
-// All returns all migration scripts for the copilot plugin
-func All() []plugin.MigrationScript {
-	return []plugin.MigrationScript{
-		new(initTables),
-	}
+// CopilotOptions represents the task options for Copilot plugin
+type CopilotOptions struct {
+	ConnectionId uint64 `json:"connectionId" mapstructure:"connectionId"`
+	Organization string `json:"organization" mapstructure:"organization"`
 }

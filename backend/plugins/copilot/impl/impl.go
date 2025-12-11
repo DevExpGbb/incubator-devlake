@@ -22,9 +22,11 @@ import (
 	"github.com/apache/incubator-devlake/core/dal"
 	"github.com/apache/incubator-devlake/core/errors"
 	"github.com/apache/incubator-devlake/core/plugin"
+	helper "github.com/apache/incubator-devlake/helpers/pluginhelper/api"
 	"github.com/apache/incubator-devlake/plugins/copilot/api"
 	"github.com/apache/incubator-devlake/plugins/copilot/models"
 	"github.com/apache/incubator-devlake/plugins/copilot/models/migrationscripts"
+	"github.com/apache/incubator-devlake/plugins/copilot/tasks"
 )
 
 var _ interface {
@@ -47,6 +49,10 @@ func (p Copilot) Init(basicRes context.BasicRes) errors.Error {
 func (p Copilot) GetTablesInfo() []dal.Tabler {
 	return []dal.Tabler{
 		&models.CopilotConnection{},
+		&models.CopilotScope{},
+		&models.CopilotOrgMetrics{},
+		&models.CopilotLanguageMetrics{},
+		&models.CopilotSeat{},
 	}
 }
 
@@ -63,7 +69,7 @@ func (p Copilot) Connection() dal.Tabler {
 }
 
 func (p Copilot) Scope() plugin.ToolLayerScope {
-	return nil
+	return &models.CopilotScope{}
 }
 
 func (p Copilot) ScopeConfig() dal.Tabler {
@@ -71,11 +77,29 @@ func (p Copilot) ScopeConfig() dal.Tabler {
 }
 
 func (p Copilot) SubTaskMetas() []plugin.SubTaskMeta {
-	return []plugin.SubTaskMeta{}
+	return tasks.SubTaskMetaList
 }
 
 func (p Copilot) PrepareTaskData(taskCtx plugin.TaskContext, options map[string]interface{}) (interface{}, errors.Error) {
-	return nil, nil
+	var op CopilotOptions
+	if err := helper.Decode(options, &op, nil); err != nil {
+		return nil, err
+	}
+
+	connectionHelper := helper.NewConnectionHelper(
+		taskCtx,
+		nil,
+		p.Name(),
+	)
+	connection := &models.CopilotConnection{}
+	err := connectionHelper.FirstById(connection, op.ConnectionId)
+	if err != nil {
+		return nil, err
+	}
+
+	return &tasks.CopilotTaskData{
+		Options: &op,
+	}, nil
 }
 
 func (p Copilot) RootPkgPath() string {

@@ -17,4 +17,11 @@ limitations under the License.
 
 package tasks
 
-// Task implementations will be added here
+import (
+	"github.com/apache/incubator-devlake/plugins/copilot/impl"
+)
+
+// CopilotTaskData represents the task data for Copilot plugin
+type CopilotTaskData struct {
+	Options *impl.CopilotOptions
+}
