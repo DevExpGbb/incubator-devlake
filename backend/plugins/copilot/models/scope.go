@@ -56,7 +56,7 @@ func (s CopilotScope) ScopeParams() interface{} {
 }
 
 type CopilotScopeParams struct {
-	ConnectionId uint64 `json:"connectionId"`
+	ConnectionId uint64 `json:"connection_id"`
 	Organization string `json:"organization"`
 }
 

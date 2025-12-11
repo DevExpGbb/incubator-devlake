@@ -60,7 +60,15 @@ func (s CopilotScope) ScopeFullName() string {
 }
 
 func (s CopilotScope) ScopeParams() interface{} {
-	return nil
+	return &CopilotScopeParams{
+		ConnectionId: s.ConnectionId,
+		Organization: s.Organization,
+	}
+}
+
+type CopilotScopeParams struct {
+	ConnectionId uint64 `json:"connection_id"`
+	Organization string `json:"organization"`
 }
 
 var _ plugin.ToolLayerScope = (*CopilotScope)(nil)
