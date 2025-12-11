@@ -77,11 +77,16 @@ func (p Copilot) ScopeConfig() dal.Tabler {
 }
 
 func (p Copilot) SubTaskMetas() []plugin.SubTaskMeta {
-	return tasks.SubTaskMetaList
+	// Convert []*plugin.SubTaskMeta to []plugin.SubTaskMeta
+	result := make([]plugin.SubTaskMeta, len(tasks.SubTaskMetaList))
+	for i, meta := range tasks.SubTaskMetaList {
+		result[i] = *meta
+	}
+	return result
 }
 
 func (p Copilot) PrepareTaskData(taskCtx plugin.TaskContext, options map[string]interface{}) (interface{}, errors.Error) {
-	var op CopilotOptions
+	var op tasks.CopilotOptions
 	if err := helper.Decode(options, &op, nil); err != nil {
 		return nil, err
 	}
