@@ -61,47 +61,12 @@ func TestQDevUserData(t *testing.T) {
 	// Import CSV data into the tool table
 	dataflowTester.ImportCsvIntoTabler("./snapshot_tables/_tool_q_dev_user_data.csv", &models.QDevUserData{})
 
-	// Verify the user data
+	// Verify the user data - comparing only the fields that exist in our CSV
 	dataflowTester.VerifyTableWithOptions(
 		models.QDevUserData{},
 		e2ehelper.TableOptions{
 			CSVRelPath:  "./snapshot_tables/_tool_q_dev_user_data.csv",
 			IgnoreTypes: []interface{}{common.Model{}},
-			IgnoreFields: []string{
-				"created_at",
-				"updated_at",
-				// Ignore all other metrics fields that are not in our test CSV
-				"code_review_succeeded_event_count",
-				"inline_chat_dismissal_event_count",
-				"inline_chat_dismissed_line_additions",
-				"inline_chat_dismissed_line_deletions",
-				"inline_chat_rejected_line_additions",
-				"inline_chat_rejected_line_deletions",
-				"inline_chat_rejection_event_count",
-				"inline_chat_accepted_line_deletions",
-				"code_review_failed_event_count",
-				"dev_acceptance_event_count",
-				"dev_accepted_lines",
-				"dev_generated_lines",
-				"dev_generation_event_count",
-				"doc_generation_accepted_file_updates",
-				"doc_generation_accepted_files_creations",
-				"doc_generation_accepted_line_additions",
-				"doc_generation_accepted_line_updates",
-				"doc_generation_event_count",
-				"doc_generation_rejected_file_creations",
-				"doc_generation_rejected_file_updates",
-				"doc_generation_rejected_line_additions",
-				"doc_generation_rejected_line_updates",
-				"test_generation_accepted_lines",
-				"test_generation_accepted_tests",
-				"test_generation_event_count",
-				"test_generation_generated_lines",
-				"test_generation_generated_tests",
-				"transformation_event_count",
-				"transformation_lines_generated",
-				"transformation_lines_ingested",
-			},
 		},
 	)
 }
