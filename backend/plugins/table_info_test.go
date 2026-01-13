@@ -35,6 +35,7 @@ import (
 	gitee "github.com/apache/incubator-devlake/plugins/gitee/impl"
 	gitextractor "github.com/apache/incubator-devlake/plugins/gitextractor/impl"
 	github "github.com/apache/incubator-devlake/plugins/github/impl"
+	github_copilot "github.com/apache/incubator-devlake/plugins/github_copilot/impl"
 	githubGraphql "github.com/apache/incubator-devlake/plugins/github_graphql/impl"
 	gitlab "github.com/apache/incubator-devlake/plugins/gitlab/impl"
 	icla "github.com/apache/incubator-devlake/plugins/icla/impl"
@@ -76,6 +77,7 @@ func Test_GetPluginTablesInfo(t *testing.T) {
 	checker.FeedIn("gitee/models", gitee.Gitee{}.GetTablesInfo)
 	checker.FeedIn("gitextractor/models", gitextractor.GitExtractor{}.GetTablesInfo)
 	checker.FeedIn("github/models", github.Github{}.GetTablesInfo)
+	checker.FeedIn("github_copilot/models", github_copilot.GithubCopilot{}.GetTablesInfo)
 	checker.FeedIn("github_graphql", githubGraphql.GithubGraphql{}.GetTablesInfo)
 	checker.FeedIn("gitlab/models", gitlab.Gitlab{}.GetTablesInfo)
 	checker.FeedIn("icla/models", icla.Icla{}.GetTablesInfo)
