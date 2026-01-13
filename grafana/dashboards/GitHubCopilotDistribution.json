@@ -1,0 +1,260 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": "-- Grafana --",
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": null,
+  "links": [],
+  "liveNow": false,
+  "panels": [
+    {
+      "datasource": "mysql",
+      "description": "Distribution of GitHub Copilot usage by editor/IDE with percentages",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            }
+          },
+          "mappings": [],
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 12,
+        "w": 12,
+        "x": 0,
+        "y": 0
+      },
+      "id": 1,
+      "options": {
+        "displayLabels": ["name", "percent"],
+        "legend": {
+          "displayMode": "table",
+          "placement": "right",
+          "values": ["value", "percent"]
+        },
+        "pieType": "pie",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "11.6.2",
+      "targets": [
+        {
+          "datasource": "mysql",
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT \n  JSON_EXTRACT(editor_breakdown, CONCAT('$[', idx, '].editor')) AS editor,\n  SUM(CAST(JSON_EXTRACT(editor_breakdown, CONCAT('$[', idx, '].active_users')) AS UNSIGNED)) AS users\nFROM _tool_github_copilot_usage\nCROSS JOIN (\n  SELECT 0 AS idx UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL \n  SELECT 3 UNION ALL SELECT 4 UNION ALL SELECT 5\n) numbers\nWHERE \n  $__timeFilter(day)\n  AND JSON_EXTRACT(editor_breakdown, CONCAT('$[', idx, '].editor')) IS NOT NULL\nGROUP BY editor\nORDER BY users DESC",
+          "refId": "A"
+        }
+      ],
+      "title": "Editor Distribution (with %)",
+      "type": "piechart"
+    },
+    {
+      "datasource": "mysql",
+      "description": "Detailed breakdown of editor usage with count and percentage",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "displayMode": "auto"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Percentage"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "percent"
+              },
+              {
+                "id": "custom.displayMode",
+                "value": "gradient-gauge"
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 12,
+        "w": 12,
+        "x": 12,
+        "y": 0
+      },
+      "id": 2,
+      "options": {
+        "footer": {
+          "fields": "",
+          "reducer": ["sum"],
+          "show": true
+        },
+        "showHeader": true,
+        "sortBy": [
+          {
+            "desc": true,
+            "displayName": "Users"
+          }
+        ]
+      },
+      "pluginVersion": "11.6.2",
+      "targets": [
+        {
+          "datasource": "mysql",
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT \n  editor_name AS 'Editor',\n  total_users AS 'Users',\n  CONCAT(total_users, ' (', ROUND(total_users * 100.0 / total, 2), '%)') AS 'Count (%)'\nFROM (\n  SELECT \n    REPLACE(JSON_EXTRACT(editor_breakdown, CONCAT('$[', idx, '].editor')), '\"', '') AS editor_name,\n    SUM(CAST(JSON_EXTRACT(editor_breakdown, CONCAT('$[', idx, '].active_users')) AS UNSIGNED)) AS total_users,\n    (\n      SELECT SUM(CAST(JSON_EXTRACT(e.editor_breakdown, CONCAT('$[', n.idx, '].active_users')) AS UNSIGNED))\n      FROM _tool_github_copilot_usage e\n      CROSS JOIN (\n        SELECT 0 AS idx UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL \n        SELECT 3 UNION ALL SELECT 4 UNION ALL SELECT 5\n      ) n\n      WHERE $__timeFilter(e.day)\n        AND JSON_EXTRACT(e.editor_breakdown, CONCAT('$[', n.idx, '].editor')) IS NOT NULL\n    ) AS total\n  FROM _tool_github_copilot_usage\n  CROSS JOIN (\n    SELECT 0 AS idx UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL \n    SELECT 3 UNION ALL SELECT 4 UNION ALL SELECT 5\n  ) numbers\n  WHERE \n    $__timeFilter(day)\n    AND JSON_EXTRACT(editor_breakdown, CONCAT('$[', idx, '].editor')) IS NOT NULL\n  GROUP BY editor_name\n) sub\nORDER BY total_users DESC",
+          "refId": "A"
+        }
+      ],
+      "title": "Editor Distribution Table",
+      "transformations": [],
+      "type": "table"
+    },
+    {
+      "datasource": "mysql",
+      "description": "Distribution of GitHub Copilot usage by programming language",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "bars",
+            "fillOpacity": 70,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 12,
+        "w": 24,
+        "x": 0,
+        "y": 12
+      },
+      "id": 3,
+      "options": {
+        "legend": {
+          "calcs": ["sum", "mean"],
+          "displayMode": "table",
+          "placement": "right"
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "datasource": "mysql",
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT \n  REPLACE(JSON_EXTRACT(language_breakdown, CONCAT('$[', idx, '].language')), '\"', '') AS language,\n  SUM(CAST(JSON_EXTRACT(language_breakdown, CONCAT('$[', idx, '].acceptances_count')) AS UNSIGNED)) AS acceptances\nFROM _tool_github_copilot_usage\nCROSS JOIN (\n  SELECT 0 AS idx UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL \n  SELECT 3 UNION ALL SELECT 4 UNION ALL SELECT 5 UNION ALL \n  SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9\n) numbers\nWHERE \n  $__timeFilter(day)\n  AND JSON_EXTRACT(language_breakdown, CONCAT('$[', idx, '].language')) IS NOT NULL\nGROUP BY language\nORDER BY acceptances DESC\nLIMIT 10",
+          "refId": "A"
+        }
+      ],
+      "title": "Language Distribution (Top 10)",
+      "type": "barchart"
+    }
+  ],
+  "refresh": "",
+  "schemaVersion": 38,
+  "style": "dark",
+  "tags": ["GitHub Copilot", "Editor", "Language"],
+  "templating": {
+    "list": []
+  },
+  "time": {
+    "from": "now-30d",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "",
+  "title": "GitHub Copilot - Editor & Language Distribution",
+  "uid": "github_copilot_distribution",
+  "version": 1,
+  "weekStart": ""
+}
