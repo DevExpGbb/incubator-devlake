@@ -57,6 +57,14 @@ func handleGitHubRetryAfter(res *http.Response, logger log.Logger, now nowFunc, 
 	return errors.HttpStatus(http.StatusTooManyRequests).New("GitHub rate limited the request")
 }
 
+// CreateApiClient creates an API client for GitHub Copilot REST API endpoints.
+// 
+// This client is configured to use the GitHub Copilot Metrics API (GA):
+// - GET /orgs/{org}/copilot/metrics (organization-level usage metrics)
+// - GET /orgs/{org}/copilot/billing/seats (seat assignments)
+//
+// API Version: 2022-11-28 (GitHub REST API versioning)
+// Documentation: https://docs.github.com/en/rest/copilot/copilot-metrics
 func CreateApiClient(taskCtx plugin.TaskContext, connection *models.GhCopilotConnection) (*helper.ApiAsyncClient, errors.Error) {
 	apiClient, err := helper.NewApiClientFromConnection(taskCtx.GetContext(), taskCtx, connection)
 	if err != nil {

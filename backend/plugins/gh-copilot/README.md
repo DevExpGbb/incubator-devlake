@@ -6,11 +6,16 @@ It follows the same structure/patterns as other DevLake data-source plugins (not
 
 ## What it collects
 
-**Phase 1 endpoints** (GitHub Copilot REST API):
+**GitHub Copilot Metrics API (GA)** - Using API version 2022-11-28:
 
-- `GET /orgs/{org}/copilot/billing`
-- `GET /orgs/{org}/copilot/billing/seats`
-- `GET /orgs/{org}/copilot/metrics`
+- `GET /orgs/{org}/copilot/billing` - Organization billing information
+- `GET /orgs/{org}/copilot/billing/seats` - Seat assignments and license usage
+- `GET /orgs/{org}/copilot/metrics` - Organization-level usage metrics (up to 100 days)
+
+**API Documentation**: https://docs.github.com/en/rest/copilot/copilot-metrics
+
+**Note**: These are the current GA (Generally Available) endpoints. GitHub also provides enterprise-level endpoints for larger organizations:
+- `GET /enterprises/{enterprise}/copilot/metrics/reports/enterprise-1-day` - Enterprise reports with downloadable NDJSON files
 
 **Stored data (tool layer)**:
 

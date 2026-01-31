@@ -68,6 +68,16 @@ func computeMetricsDateRange(now time.Time, since *time.Time) (start time.Time, 
 	return start, until
 }
 
+// CollectCopilotOrgMetrics collects organization-level Copilot usage metrics from GitHub.
+//
+// API Endpoint: GET /orgs/{org}/copilot/metrics
+// This endpoint provides up to 100 days of daily usage metrics including:
+// - Active users and engagement levels
+// - Code completion suggestions and acceptances
+// - Language and IDE breakdowns
+// - Chat usage statistics
+//
+// The collector supports incremental collection based on the last sync time.
 func CollectCopilotOrgMetrics(taskCtx plugin.SubTaskContext) errors.Error {
 	data, ok := taskCtx.TaskContext().GetData().(*GhCopilotTaskData)
 	if !ok {

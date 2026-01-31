@@ -58,6 +58,16 @@ func parseCopilotSeatsFromResponse(res *http.Response) ([]json.RawMessage, error
 	return wrapped.Seats, nil
 }
 
+// CollectCopilotSeatAssignments collects Copilot seat assignment data from GitHub.
+//
+// API Endpoint: GET /orgs/{org}/copilot/billing/seats
+// This endpoint provides information about:
+// - Assigned Copilot seats (users with access)
+// - Assignment timestamps
+// - Last activity dates
+// - Pending invitations
+//
+// The data helps track Copilot adoption and license utilization.
 func CollectCopilotSeatAssignments(taskCtx plugin.SubTaskContext) errors.Error {
 	data, ok := taskCtx.TaskContext().GetData().(*GhCopilotTaskData)
 	if !ok {
